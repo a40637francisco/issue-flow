@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+  <div class="section selected-issue">
+    <span class="selected-issue__label">Issue selected</span>
+    <span id="selected-issue__text" class="selected-issue__text"></span>
+    <span class="selected-issue__text selected-issue__time">
+      <i id="selected-issue__time-icon" class="far fa-clock display-none"></i>
+      <span id="selected-issue__time"></span>
+    </span>
+  </div>
+  <div class="section">
+    <select id="issues-list">
+    </select>
+  </div>
+  <div class="section">
+    <div id="timer-controls" class="display-none">
+      <div id="timer-actions">
+        <button class="btn" id="timer-start">START</button>
+        <div id="timer-on__actions" class="display-none">
+          <button class="btn" id="timer-pause">PAUSE</button>
+          <button class="btn" id="timer-stop">STOP</button>
+        </div>
+      </div>
+    </div>
+    <div id="pomodoro-controls" class="display-none">
+      POMODORO STUFF!! TODOOOO
+    </div>
+    <div class="menu">
+      <button class="btn" id="pomodoro-btn">POMODORO</button>
+      <button class="btn" id="timer-btn">TIMER</button>
+    </div>
+  </div>
+  <script src="/scripts/popup/issue-scrapper.js" type="text/javascript"></script>
+  <script src="/scripts/popup/popup.js" type="text/javascript"></script>
+</body>
+
+</html>

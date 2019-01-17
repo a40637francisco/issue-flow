@@ -1,0 +1,92 @@
+:root {
+  --first: #69779b;
+  --second: #9692af;
+  --third: #acdbdf;
+  --fourth: #d7eaea;
+
+  --stop: #cd4545;
+  --pause: #f3cf7a;
+}
+
+.menu {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 15px;
+}
+
+.menu > *:not(:last-child) {
+  margin-right: 5px;
+}
+
+#issues-list {
+  width: 150px;
+}
+
+#timer-actions {
+
+}
+
+#timer-on__actions {
+
+}
+
+#timer-on__actions.display-none,
+#timer-start.display-none {
+  display: none;
+}
+
+#timer-start {
+  background-color: var(--second);
+}
+
+#timer-stop {
+  background-color: var(--stop);
+}
+
+#timer-pause {
+  background-color: var(--pause);
+}
+
+.section {
+  margin-bottom: 15px;
+}
+
+.display-none {
+  display: none;
+}
+
+.selected-issue {
+  font-size: 14px;
+}
+
+.selected-issue__label {
+  font-weight: 700;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.selected-issue__text {
+  display: block;
+}
+
+.selected-issue__time {
+  margin-top: 5px;
+}
+
+#selected-issue__refresh-btn {
+  cursor: pointer;
+}
+
+.btn {
+  border: none;
+  background-color: var(--fourth, gray);
+  cursor: pointer;
+  color: white;
+  padding: 8px 16px;
+  outline: none;
+}
+
+.menu-selected {
+  font-weight: 700;
+  background-color: var(--third, gray);
+}
