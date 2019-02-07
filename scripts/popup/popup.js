@@ -181,4 +181,8 @@ setIssueSelectChangeListenner()
 
 getSetSelectedIssue()
 
+getBoardColumns()
+
 getIssuesFromBoard()
+
+

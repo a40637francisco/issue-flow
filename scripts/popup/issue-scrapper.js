@@ -1,18 +1,23 @@
 const boardTitleElem = document.getElementById('board-title')
 
 const issueListElem = document.getElementById('issues-list')
+const issuesFilters = document.getElementById('issues-filters')
 
 const selectedIssueText = document.getElementById('selected-issue__text')
 const selectedIssueTime = document.getElementById('selected-issue__time')
 const selectedIssueTimeIcon = document.getElementById('selected-issue__time-icon')
-
 const port = chrome.runtime.connect({ name: "knockknock" });
+
+let selectedFilter = null
+
+let issues = []
 
 port.onMessage.addListener(function (msg) {
   const action = msg.action
   backgroundHandler[action](msg)
 })
 
+// --- BACKGROUND ACTIONS HANDLER ---
 const backgroundHandler = ({
   ['ON-SELECT-ISSUE']: (msg) => {
     const time = formatMillisToFullTime(msg.time)
@@ -28,17 +33,12 @@ const backgroundHandler = ({
   },
 })
 
-
+// --- CHROME ACTIONS HANDLER ---
 const chromeTabsHandler = {
   GET_BOARD_ISSUES: (response) => {
-    while (issueListElem.childNodes.length > 1) {
-      issueListElem.removeChild(issueListElem.lastChild);
-    }
-    issueListElem.appendChild(emptyOption())
     if (response && response.issues) {
-      response.issues.forEach(i => {
-        buildIssueOption(issueListElem, i)
-      })
+      issues = response.issues
+      setIssuesInDropdown(response.issues)
     }
   },
   GET_SELECTED_ISSUE: (response) => {
@@ -47,6 +47,13 @@ const chromeTabsHandler = {
       selectedIssueText.innerHTML = `${response.selected.boardKey}-${response.selected.id} ${response.selected.summary}`
     }
   },
+  GET_BOARD_COLUMNS: (response) => {
+    while (issuesFilters.childNodes.length > 0) {
+      issuesFilters.removeChild(issuesFilters.lastChild);
+    }
+    if (response && response.columns)
+      response.columns.map(f => buildFilterOption(f)).forEach(elem => issuesFilters.appendChild(elem))
+  }
 }
 
 const callChromeTabsAction = (tabs, action, responseAction) => {
@@ -55,6 +62,19 @@ const callChromeTabsAction = (tabs, action, responseAction) => {
       console.log(chrome.runtime.lastError)
     chromeTabsHandler[responseAction || action](response)
   })
+}
+
+const setIssuesInDropdown = (issues) => {
+  while (issueListElem.childNodes.length > 1) {
+    issueListElem.removeChild(issueListElem.lastChild);
+  }
+  issueListElem.appendChild(emptyOption())
+  if (issues) {
+    if (issues.length === 0) { return buildIssueOption(issueListElem, { boardKey: null, id: null, summary: 'Sem resultados...' }) }
+    issues.forEach(i => {
+      buildIssueOption(issueListElem, i)
+    })
+  }
 }
 
 const getIssuesFromBoard = () => {
@@ -70,8 +90,8 @@ const getSetSelectedIssue = () => {
 const buildIssueOption = (selectElem, issue) => {
   const option = document.createElement('option')
   option.value = JSON.stringify(issue)
-  option.innerHTML = `${issue.boardKey}-${issue.id} ${issue.summary}`
-  option.title = `${issue.boardKey}-${issue.id} ${issue.summary}`
+  option.innerHTML = issue.id ? `${issue.boardKey}-${issue.id} ${issue.summary}` : issue.summary
+  option.title = issue.id ? `${issue.boardKey}-${issue.id} ${issue.summary}` : issue.summary
   selectElem.appendChild(option)
 }
 
@@ -106,4 +126,27 @@ const emptyOption = () => {
   option.disabled = true
   option.hidden = true
   return option
+}
+
+const getBoardColumns = () => {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    callChromeTabsAction(tabs, 'GET_BOARD_COLUMNS')
+  })
+}
+
+const buildFilterOption = filter => {
+  const span = document.createElement('span')
+  span.innerHTML = filter.text
+  span.value = filter.columnId
+  span.addEventListener('click', (e) => {
+    if (selectedFilter)
+      selectedFilter.classList.remove('issues-filters__filter-selected')
+
+    selectedFilter = e.target
+    e.target.classList.add('issues-filters__filter-selected')
+
+    const filteredIssues = issues.filter(i => i.columnId === e.target.value)
+    setIssuesInDropdown(filteredIssues)
+  })
+  return span
 }

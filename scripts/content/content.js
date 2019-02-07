@@ -15,10 +15,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       sendResponse({ title: allText.replace(' board', '') })
     },
     GET_BOARD_ISSUES: () => {
-      const allIssues = Array.from(document.querySelectorAll('div[data-issue-id]')) // ver se o selector na nova board
+      const allIssues = Array.from(document.querySelectorAll('div[data-issue-id]'))
       const issues = allIssues.map(i => {
         const issue = buildIssue(i)
-        return { id: `${issue.id}`, type: issue.type, boardKey: issue.boardKey, summary: issue.summary }
+        const columnId = i.parentElement.parentElement.dataset.columnId
+        return { id: `${issue.id}`, type: issue.type, boardKey: issue.boardKey, summary: issue.summary, columnId }
       })
       sendResponse({ issues })
     },
@@ -30,6 +31,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       }
       sendResponse({ selected })
     },
+    GET_BOARD_COLUMNS: () => {
+      const columnsElems = Array.from(document.querySelectorAll('#ghx-column-headers li'))
+      const columns = columnsElems.map(c => {
+        const h2 = c.querySelector('h2')
+        return { text: h2.innerText, columnId: c.dataset.id }
+      })
+      sendResponse({ columns })
+    }
   }
 
   if (action && handlers[action]) {

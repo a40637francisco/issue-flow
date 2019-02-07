@@ -8,6 +8,10 @@
   --pause: #f3cf7a;
 }
 
+body {
+  width: 250px;
+}
+
 .menu {
   display: flex;
   justify-content: space-around;
@@ -19,7 +23,7 @@
 }
 
 #issues-list {
-  width: 150px;
+  width: 250px;
 }
 
 #timer-actions {
@@ -89,4 +93,27 @@
 .menu-selected {
   font-weight: 700;
   background-color: var(--third, gray);
+}
+
+#issues-filters {
+  display: flex;
+  justify-items: center;
+  align-items: center;
+}
+
+#issues-filters span {
+  text-align: center;
+  display: block;
+  color: #615d5d;
+  cursor: pointer;
+  user-select: none;
+}
+
+#issues-filters .issues-filters__filter-selected {
+  color: black;
+  font-weight: 700;
+}
+
+#issues-filters span:not(:last-child) {
+  margin-right: 10px;
 }
