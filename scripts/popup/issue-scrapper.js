@@ -1,4 +1,5 @@
 const boardTitleElem = document.getElementById('board-title')
+const errorElem = document.getElementById('error')
 
 const issueListElem = document.getElementById('issues-list')
 const issuesFilters = document.getElementById('issues-filters')
@@ -6,13 +7,14 @@ const issuesFilters = document.getElementById('issues-filters')
 const selectedIssueText = document.getElementById('selected-issue__text')
 const selectedIssueTime = document.getElementById('selected-issue__time')
 const selectedIssueTimeIcon = document.getElementById('selected-issue__time-icon')
-const port = chrome.runtime.connect({ name: "knockknock" });
+
+const backendPort = chrome.runtime.connect({ name: "backend" });
 
 let selectedFilter = null
 
 let issues = []
 
-port.onMessage.addListener(function (msg) {
+backendPort.onMessage.addListener(function (msg) {
   const action = msg.action
   backgroundHandler[action](msg)
 })
@@ -43,7 +45,7 @@ const chromeTabsHandler = {
   },
   GET_SELECTED_ISSUE: (response) => {
     if (response && response.selected) {
-      port.postMessage({ action: "SELECT-ISSUE", body: response.selected });
+      backendPort.postMessage({ action: "SELECT-ISSUE", body: response.selected });
       selectedIssueText.innerHTML = `${response.selected.boardKey}-${response.selected.id} ${response.selected.summary}`
     }
   },
@@ -58,8 +60,10 @@ const chromeTabsHandler = {
 
 const callChromeTabsAction = (tabs, action, responseAction) => {
   chrome.tabs.sendMessage(tabs[0].id, { action }, function (response) {
-    if (chrome.runtime.lastError)
-      console.log(chrome.runtime.lastError)
+    if (chrome.runtime.lastError) {
+      errorElem.classList.add('error-show')
+      return console.log(chrome.runtime.lastError)
+    }
     chromeTabsHandler[responseAction || action](response)
   })
 }
@@ -84,7 +88,7 @@ const getIssuesFromBoard = () => {
 }
 
 const getSetSelectedIssue = () => {
-  port.postMessage({ action: "GET-SELECTED-ISSUE" });
+  backendPort.postMessage({ action: "GET-SELECTED-ISSUE" });
 }
 
 const buildIssueOption = (selectElem, issue) => {
@@ -138,14 +142,21 @@ const buildFilterOption = filter => {
   const span = document.createElement('span')
   span.innerHTML = filter.text
   span.value = filter.columnId
+
   span.addEventListener('click', (e) => {
-    if (selectedFilter)
+    const filterClicked = e.target
+
+    if (selectedFilter) {
       selectedFilter.classList.remove('issues-filters__filter-selected')
+      if(selectedFilter.value  === filterClicked.value) {
+        selectedFilter = null
+        return setIssuesInDropdown(issues)
+      }
+    }
+    selectedFilter = filterClicked
+    filterClicked.classList.add('issues-filters__filter-selected')
 
-    selectedFilter = e.target
-    e.target.classList.add('issues-filters__filter-selected')
-
-    const filteredIssues = issues.filter(i => i.columnId === e.target.value)
+    const filteredIssues = issues.filter(i => i.columnId === filterClicked.value)
     setIssuesInDropdown(filteredIssues)
   })
   return span

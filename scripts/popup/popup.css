@@ -99,6 +99,7 @@ body {
   display: flex;
   justify-items: center;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 #issues-filters span {
@@ -116,4 +117,24 @@ body {
 
 #issues-filters span:not(:last-child) {
   margin-right: 10px;
+}
+
+.error {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 999;
+  background: #615d5d;
+  opacity: .9;
+  color: white;
+  display: none;
+  top: 0;
+  left: 0;
+  align-items: center;
+  text-align: center;
+  user-select: none;
+}
+
+.error-show {
+  display: flex;
 }

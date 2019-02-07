@@ -8,8 +8,6 @@ const TIMER_PAUSED = 'PAUSED'
 let timerState = TIMER_STOPPED
 let menu = TIMER_MENU
 
-const backendPort = chrome.runtime.connect({ name: "backend" });
-
 // -------------- LAYOUT ----------------------
 const setRunningTimerButtons = () => {
   const startTimerElem = document.getElementById('timer-start')
@@ -80,21 +78,21 @@ const refreshLayout = () => {
 // ---------------- TIMER ---------------------
 const onTimerStart = () => {
   timerState = TIMER_RUNNING
-  port.postMessage({ action: 'TIMER-START' });
+  backendPort.postMessage({ action: 'TIMER-START' });
 }
 
 const onTimerStop = () => {
-  port.postMessage({ action: 'TIMER-STOP' });
+  backendPort.postMessage({ action: 'TIMER-STOP' });
   timerState = TIMER_STOPPED
 }
 
 const onTimerPause = () => {
-  port.postMessage({ action: 'TIMER-PAUSE' });
+  backendPort.postMessage({ action: 'TIMER-PAUSE' });
   timerState = TIMER_PAUSED
 }
 
 const onTimerResume = () => {
-  port.postMessage({ action: 'TIMER-RESUME' });
+  backendPort.postMessage({ action: 'TIMER-RESUME' });
   timerState = TIMER_RUNNING
 }
 
@@ -143,7 +141,7 @@ const setMenuListenners = () => {
 }
 
 const setSelectedIssue = (issue) => {
-  port.postMessage({ action: 'SELECT-ISSUE', issue });
+  backendPort.postMessage({ action: 'SELECT-ISSUE', issue });
 }
 
 const setIssueSelectChangeListenner = () => {
